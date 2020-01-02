@@ -1,0 +1,146 @@
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <link rel="stylesheet" href="styles.css" />
+  <body>
+    <header>
+      <input type="text" id="from" value="0" />
+      <input type="text" id="to" value="100" />
+      <button onclick="updateList()">Try it</button>
+    </header>
+    <ul id="wordlist"></ul>
+
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="output.js"></script>
+
+    <script>
+      console.log('Datensatz', data);
+      // returned ein Objekt, das alle Metriken enthält für eine Liste von Datensätzen
+      calcMetrics = data => {
+        let tp = 0;
+        let fn = 0;
+        let fp = 0;
+        let tn = 0;
+        data.forEach(el => {
+          if (el.label == '0' && el.prediction == '0') tn++;
+          if (el.label == '1' && el.prediction == '1') tp++;
+          if (el.label == '0' && el.prediction == '1') fp++;
+          if (el.label == '1' && el.prediction == '0') fn++;
+        });
+        let accuracy = (tp + tn) / (tp + fp + fn + tn);
+        let precision = tp / (tp + fp);
+        let recall = tp / (tp + fn);
+        let f1Score = (2 * (recall * precision)) / (recall + precision);
+        return {
+          tp,
+          tn,
+          fp,
+          fn,
+          accuracy,
+          precision,
+          recall,
+          f1Score,
+          length: data.length
+        };
+      };
+
+      // An dieser Stelle habe ich versucht die einzelnen Wörter aus dem Datensatz zu filtern
+      let library = {};
+
+      data.forEach(el => {
+        const isTrue = el.prediction == el.label;
+        el.text
+          .toLowerCase()
+          .replace(/[\.\,\"\(\)\!\&\%\$\#\'\*\=\>\?\/\:\;\+\/]/g, '')
+          .split(' ')
+          .forEach(word => {
+            if (word in library) {
+              if (isTrue) {
+                library[word].true++;
+              } else {
+                library[word].false++;
+              }
+            } else {
+              library[word] = {
+                value: word,
+                false: isTrue ? 0 : 1,
+                true: isTrue ? 1 : 0
+              };
+            }
+          });
+      });
+      console.log('Library of Words', Object.values(library));
+
+      let words = [];
+      Object.values(library).forEach(word => {
+        words.push(word);
+      });
+      console.log(
+        'Filtered library',
+        words
+          .filter(
+            el =>
+              el.false > 1 &&
+              el.true > 1 &&
+              el.false / el.true > 1 &&
+              el.value.length > 3
+          )
+          .sort((a, b) => a.false / a.true - b.false / b.true)
+      );
+
+      console.log(
+        'Alle Dataen mit "(*)" included',
+        data.filter(el => new RegExp(/\(*\)/g).test(el.text))
+      );
+
+      // Genneriert die Liste der Testsamples
+      const generateWordList = (from, to, status = true) => {
+        let list = document.getElementById('wordlist');
+        list.innerHTML = null;
+        for (let i = from; i < to && i < data.length; i++) {
+          let listElement = document.createElement('li');
+          if (data[i].label != data[i].prediction) {
+            listElement.classList.add('error');
+          }
+          if (status) {
+            let statusElement = document.createElement('div');
+            statusElement.innerText =
+              'id: ' +
+              data[i].id +
+              ' label: ' +
+              data[i].label +
+              ' prediction: ' +
+              data[i].prediction +
+              ' probability: ' +
+              data[i].probability;
+            statusElement.classList.add('status');
+            listElement.appendChild(statusElement);
+          }
+          let dataSet = document.createElement('div');
+          dataSet.innerText = data[i].text;
+          dataSet.classList.add('text');
+          listElement.appendChild(dataSet);
+          list.appendChild(listElement);
+        }
+      };
+      const updateList = () => {
+        let from = document.getElementById('from').value;
+        let to = document.getElementById('to').value;
+        generateWordList(from, to);
+      };
+      generateWordList(400, 500);
+    </script>
+    <!-- Der generator mit dem Diagramme erzeugt werden -->
+    <script src="./diagrams/_generator.js"></script>
+    <!-- Die einzelnen Diagramme -->
+    <script src="./diagrams/wordlength.js"></script>
+    <script src="./diagrams/specialchars.js"></script>
+    <script src="./diagrams/textlength.js"></script>
+    <script src="./diagrams/personalpronoun.js"></script>
+    <script src="./diagrams/politics.js"></script>
+    <script src="./diagrams/bracketlength.js"></script>
+    <script src="./diagrams/sentencelength.js"></script>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+body {
+  margin: 16px;
+    font-family: sans-serif;
+}
+ul {
+  list-style: none;
+  font-size: 20;
+  margin: 0;
+  padding: 0;
+  height: 500px;
+  overflow-y: scroll;
+}
+ul li div{
+  padding: 16px;
+}
+ul li {
+  background-color: #f5fbff;
+  border-left: 5px solid #4f81bc;
+  margin-bottom: 8px;
+}
+ul li.error {
+  background-color: #fdf5f5;
+  border-left: 5px solid #c0504e;
+}
+ul li .status {
+  background-color: #c1e5fa;
+}
+ul li.error .status {
+  background-color: #f8d6d6;
+}
+ul li .text {
+  line-height: 28px;
+}
+header {
+  padding: 16px;
+  background-color: #ccc;
+  margin-bottom: 5px;
+}
+header input{
+  text-align: center;
+  font-size: 24px;
+  offset: none;
+  border: none;
+  width: 100px;
+  border-radius: 8px;
+  padding: 0 20px;
+}
+header button {
+  font-size: 24px;
+  border: none;
+  padding: 0 20px;
+}
