@@ -39,6 +39,7 @@ header {
 header input{
   text-align: center;
   font-size: 24px;
+  display: inline-block;
   offset: none;
   border: none;
   width: 100px;
@@ -49,4 +50,12 @@ header button {
   font-size: 24px;
   border: none;
   padding: 0 20px;
+}
+#filter {
+  width: 400px;
+}
+#metrics {
+  padding: 0;
+  margin-top: 8px;
+  margin-bottom: 0;
 }

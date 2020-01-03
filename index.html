@@ -10,6 +10,7 @@
       <input type="text" id="to" placeholder="670"/>
       <input type="text" id="filter"  placeholder="RegExp"/>
       <button onclick="updateList()">Try it</button>
+      <p id="metrics"></p>
     </header>
     <ul id="wordlist"></ul>
 
@@ -110,33 +111,36 @@
       const generateWordList = (from, to, contains = '', status = true) => {
         let list = document.getElementById('wordlist');
         list.innerHTML = null;
-        for (let i = from; i < to && i < data.length; i++) {
-          if (!(!!contains && !new RegExp(contains, 'g').test(data[i].text))) {
+        let filteredData = data.filter( el =>  parseInt(el.id) >= from && parseInt(el.id) < to)
+        filteredData = filteredData.filter(el => !(!!contains && !new RegExp(contains, 'g').test(el.text)));
+        
+        let metrics = calcMetrics(filteredData)
+        document.getElementById('metrics').innerText = 'tp: '+metrics.tp+' tn: '+metrics.tn+' fp: '+metrics.fp+' fn: '+metrics.fn;
+        filteredData.forEach(element => {
             let listElement = document.createElement('li');
-            if (data[i].label != data[i].prediction) {
+            if (element.label != element.prediction) {
               listElement.classList.add('error');
             }
             if (status) {
               let statusElement = document.createElement('div');
               statusElement.innerText =
                 'id: ' +
-                data[i].id +
+                element.id +
                 ' label: ' +
-                data[i].label +
+                element.label +
                 ' prediction: ' +
-                data[i].prediction +
+                element.prediction +
                 ' probability: ' +
-                data[i].probability;
+                element.probability;
               statusElement.classList.add('status');
               listElement.appendChild(statusElement);
             }
             let dataSet = document.createElement('div');
-            dataSet.innerText = data[i].text;
+            dataSet.innerText = element.text;
             dataSet.classList.add('text');
             listElement.appendChild(dataSet);
             list.appendChild(listElement);
-          }
-        }
+        });
       };
       const updateList = () => {
         let from = document.getElementById('from').value;
