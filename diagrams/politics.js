@@ -5,16 +5,8 @@ generateDiagram(
       name: word,
       f: el => el.text.toLowerCase().includes(word)
     });
-    let view3 = [
-      {
-        type: 'stackedColumn100',
-        dataPoints: []
-      },
-      {
-        type: 'stackedColumn100',
-        dataPoints: []
-      }
-    ];
+    
+    let view = generateDataView(true, onlyTrueAndFalse);
     [
     {
         name: 'all',
@@ -26,20 +18,14 @@ generateDiagram(
       singleWordFilter('frau'),
       singleWordFilter('lügen'),
       singleWordFilter('asyl'),
-      singleWordFilter('flüchtlinge')
+      singleWordFilter('flüchtlinge'),
+      {
+        name: '*-*',
+        f: el=>  new RegExp(/([A-Z][a-z]+\-)+[A-Z][a-z]+/g).test(el.text)
+      }
     ].forEach(filter => {
-      let filtered = data.filter(filter.f);
-      let res = calcMetrics(filtered);
-      // console.log(filter.name, res);
-      view3[0].dataPoints.push({
-        y: res.tp + res.tn,
-        label: filter.name
-      });
-      view3[1].dataPoints.push({
-        y: res.fp + res.fn,
-        label: filter.name
-      });
+      addToView(filter, data, view);
     });
-    return view3;
+    return view;
   })()
 );

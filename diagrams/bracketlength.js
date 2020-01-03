@@ -2,18 +2,10 @@ generateDiagram(
   'Eingeklammerte Bereiche',
   (() => {
     let min = 0;
-    let max = 20;
+    let max = 4;
     let stepsize = 5;
-    let view = [
-      {
-        type: 'stackedColumn',
-        dataPoints: []
-      },
-      {
-        type: 'stackedColumn',
-        dataPoints: []
-      }
-    ];
+    
+    let view = generateDataView(true, onlyTrueAndFalse);
 
     const bracketContentLength = text => {
       var found = [],
@@ -26,7 +18,6 @@ generateDiagram(
       return len;
       
     };
-    bracketContentLength('asdasd (sdasd) aasasd (123123) asdasd');
 
     let filters = [];
     for (let i = min; i < max; i++) {
@@ -40,16 +31,7 @@ generateDiagram(
     }
 
     filters.forEach(filter => {
-      let filtered = data.filter(filter.f);
-      let res = calcMetrics(filtered);
-      view[0].dataPoints.push({
-        y: res.tp + res.tn,
-        label: filter.name
-      });
-      view[1].dataPoints.push({
-        y: res.fp + res.fn,
-        label: filter.name
-      });
+      addToView(filter, data, view);
     });
     return view;
   })()

@@ -2,27 +2,18 @@ generateDiagram(
   'Durchschnittliche Satzlänge (in Worten)',
   (() => {
     let min = 0;
-    let max = 20;
-    let stepsize = 2;
-    let view = [
-      {
-        type: 'stackedColumn',
-        dataPoints: []
-      },
-      {
-        type: 'stackedColumn',
-        dataPoints: []
-      }
-    ];
+    let max = 15;
+    let stepsize = 1;
+    
+    let view = generateDataView(false, onlyTrueAndFalse);
     sentenceLength = (text, from, to) => {
-      text.replace('...', '.')
       let nos = text.split(new RegExp('[' + ['/.', '/!', '/?'].join('') + ']', 'g')).length
       let now = text.split(' ').length;
-      console.log(
-        text.split(new RegExp('[' + ['/.', '/!', '/?'].join('') + ']', 'g')),
-        text.split(' '),
-        nos, now, now/nos
-      );
+      // console.log(
+      //   text.split(new RegExp('[' + ['/.', '/!', '/?'].join('') + ']', 'g')),
+      //   text.split(' '),
+      //   nos, now, now/nos
+      // );
       
       
       return Math.round(now/nos) >= from && Math.round(now/nos) < to;
@@ -39,16 +30,7 @@ generateDiagram(
     }
 
     filters.forEach(filter => {
-      let filtered = data.filter(filter.f);
-      let res = calcMetrics(filtered);
-      view[0].dataPoints.push({
-        y: res.tp + res.tn,
-        label: filter.name
-      });
-      view[1].dataPoints.push({
-        y: res.fp + res.fn,
-        label: filter.name
-      });
+      addToView(filter, data, view);
     });
     return view;
   })()

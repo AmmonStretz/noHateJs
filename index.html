@@ -6,8 +6,9 @@
   <link rel="stylesheet" href="styles.css" />
   <body>
     <header>
-      <input type="text" id="from" value="0" />
-      <input type="text" id="to" value="100" />
+      <input type="text" id="from" />
+      <input type="text" id="to" />
+      <input type="text" id="filter" />
       <button onclick="updateList()">Try it</button>
     </header>
     <ul id="wordlist"></ul>
@@ -16,6 +17,12 @@
     <script src="output.js"></script>
 
     <script>
+      const falseLabels = [];
+      data = data.filter(el => !data.includes(el.id))
+
+      // Diagramme zeigen nicht die restlichen metriken an
+      const onlyTrueAndFalse = true;
+
       console.log('Datensatz', data);
       // returned ein Objekt, das alle Metriken enthält für eine Liste von Datensätzen
       calcMetrics = data => {
@@ -82,9 +89,9 @@
         words
           .filter(
             el =>
-              el.false > 1 &&
+              el.false > 10 &&
               el.true > 1 &&
-              el.false / el.true > 1 &&
+              el.false / el.true > 0.8 &&
               el.value.length > 3
           )
           .sort((a, b) => a.false / a.true - b.false / b.true)
@@ -96,45 +103,49 @@
       );
 
       // Genneriert die Liste der Testsamples
-      const generateWordList = (from, to, status = true) => {
+      const generateWordList = (from, to, contains = '', status = true) => {
         let list = document.getElementById('wordlist');
         list.innerHTML = null;
         for (let i = from; i < to && i < data.length; i++) {
-          let listElement = document.createElement('li');
-          if (data[i].label != data[i].prediction) {
-            listElement.classList.add('error');
+          if (new RegExp(contains, 'g').test(data[i].text)) {
+            let listElement = document.createElement('li');
+            if (data[i].label != data[i].prediction) {
+              listElement.classList.add('error');
+            }
+            if (status) {
+              let statusElement = document.createElement('div');
+              statusElement.innerText =
+                'id: ' +
+                data[i].id +
+                ' label: ' +
+                data[i].label +
+                ' prediction: ' +
+                data[i].prediction +
+                ' probability: ' +
+                data[i].probability;
+              statusElement.classList.add('status');
+              listElement.appendChild(statusElement);
+            }
+            let dataSet = document.createElement('div');
+            dataSet.innerText = data[i].text;
+            dataSet.classList.add('text');
+            listElement.appendChild(dataSet);
+            list.appendChild(listElement);
           }
-          if (status) {
-            let statusElement = document.createElement('div');
-            statusElement.innerText =
-              'id: ' +
-              data[i].id +
-              ' label: ' +
-              data[i].label +
-              ' prediction: ' +
-              data[i].prediction +
-              ' probability: ' +
-              data[i].probability;
-            statusElement.classList.add('status');
-            listElement.appendChild(statusElement);
-          }
-          let dataSet = document.createElement('div');
-          dataSet.innerText = data[i].text;
-          dataSet.classList.add('text');
-          listElement.appendChild(dataSet);
-          list.appendChild(listElement);
         }
       };
       const updateList = () => {
         let from = document.getElementById('from').value;
         let to = document.getElementById('to').value;
-        generateWordList(from, to);
+        let contains = document.getElementById('filter').value;
+        generateWordList(from, to, contains);
       };
       generateWordList(400, 500);
     </script>
     <!-- Der generator mit dem Diagramme erzeugt werden -->
     <script src="./diagrams/_generator.js"></script>
     <!-- Die einzelnen Diagramme -->
+    <script src="./diagrams/questionwords.js"></script>
     <script src="./diagrams/wordlength.js"></script>
     <script src="./diagrams/specialchars.js"></script>
     <script src="./diagrams/textlength.js"></script>
