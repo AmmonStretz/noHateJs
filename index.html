@@ -6,9 +6,9 @@
   <link rel="stylesheet" href="styles.css" />
   <body>
     <header>
-      <input type="text" id="from" />
-      <input type="text" id="to" />
-      <input type="text" id="filter" />
+      <input type="text" id="from" placeholder="0"/>
+      <input type="text" id="to" placeholder="670"/>
+      <input type="text" id="filter"  placeholder="RegExp"/>
       <button onclick="updateList()">Try it</button>
     </header>
     <ul id="wordlist"></ul>
@@ -101,13 +101,17 @@
         'Alle Dataen mit "(*)" included',
         data.filter(el => new RegExp(/\(*\)/g).test(el.text))
       );
+      // 0 0 1
+      // 1 0 0
+      // 0 1 1
+      // 1 1 1
 
       // Genneriert die Liste der Testsamples
       const generateWordList = (from, to, contains = '', status = true) => {
         let list = document.getElementById('wordlist');
         list.innerHTML = null;
         for (let i = from; i < to && i < data.length; i++) {
-          if (new RegExp(contains, 'g').test(data[i].text)) {
+          if (!(!!contains && !new RegExp(contains, 'g').test(data[i].text))) {
             let listElement = document.createElement('li');
             if (data[i].label != data[i].prediction) {
               listElement.classList.add('error');
@@ -140,7 +144,7 @@
         let contains = document.getElementById('filter').value;
         generateWordList(from, to, contains);
       };
-      generateWordList(400, 500);
+      generateWordList(0, 670);
     </script>
     <!-- Der generator mit dem Diagramme erzeugt werden -->
     <script src="./diagrams/_generator.js"></script>
