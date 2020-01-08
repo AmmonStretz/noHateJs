@@ -2,7 +2,7 @@ generateDiagram(
   'Durchschnittliche Wortlänge',
   (() => {
     
-    let view = generateDataView(false, onlyTrueAndFalse);
+    let view = generateDataView(true, onlyTrueAndFalse);
     let filters = [
       {
         name: 'all',

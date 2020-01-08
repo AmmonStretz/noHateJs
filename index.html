@@ -6,9 +6,10 @@
   <link rel="stylesheet" href="styles.css" />
   <body>
     <header>
-      <input type="text" id="from" placeholder="0"/>
-      <input type="text" id="to" placeholder="670"/>
+      <input type="text" id="from" value="0"/>
+      <input type="text" id="to" value="670"/>
       <input type="text" id="filter"  placeholder="RegExp"/>
+      <label for="true">true visible</label><input type="checkbox" name="true" id="true" checked>
       <button onclick="updateList()">Try it</button>
       <p id="metrics"></p>
     </header>
@@ -18,7 +19,7 @@
     <script src="output.js"></script>
 
     <script>
-      const falseLabels = [];
+      const falseLabels = [494];
       data = data.filter(el => !data.includes(el.id))
 
       // Diagramme zeigen nicht die restlichen metriken an
@@ -108,14 +109,21 @@
       // 1 1 1
 
       // Genneriert die Liste der Testsamples
-      const generateWordList = (from, to, contains = '', status = true) => {
+      const generateWordList = (from, to, contains = '', trueIsVisible = true, status = true) => {
         let list = document.getElementById('wordlist');
         list.innerHTML = null;
-        let filteredData = data.filter( el =>  parseInt(el.id) >= from && parseInt(el.id) < to)
-        filteredData = filteredData.filter(el => !(!!contains && !new RegExp(contains, 'g').test(el.text)));
+        let filteredData = data.filter( el =>  {
+          if(!trueIsVisible && el.prediction == el.label){
+            return false;
+          }
+          return parseInt(el.id) >= from && parseInt(el.id) < to;
+        })
+        filteredData = filteredData.filter(el => !(!!contains && !new RegExp(contains, 'i').test(el.text)));
         
         let metrics = calcMetrics(filteredData)
-        document.getElementById('metrics').innerText = 'tp: '+metrics.tp+' tn: '+metrics.tn+' fp: '+metrics.fp+' fn: '+metrics.fn;
+        document.getElementById('metrics').innerText = 'tp: '+metrics.tp+' tn: '+metrics.tn+' fp: '+metrics.fp+' fn: '+metrics.fn+' f1Score: '+metrics.f1Score;
+        console.log(metrics);
+        
         filteredData.forEach(element => {
             let listElement = document.createElement('li');
             if (element.label != element.prediction) {
@@ -146,7 +154,9 @@
         let from = document.getElementById('from').value;
         let to = document.getElementById('to').value;
         let contains = document.getElementById('filter').value;
-        generateWordList(from, to, contains);
+        let trueIsVisible = document.getElementById('true').checked;
+        
+        generateWordList(from, to, contains, trueIsVisible);
       };
       generateWordList(0, 670);
     </script>
@@ -161,5 +171,7 @@
     <script src="./diagrams/politics.js"></script>
     <script src="./diagrams/bracketlength.js"></script>
     <script src="./diagrams/sentencelength.js"></script>
+    <script src="./diagrams/capitalletters.js"></script>
+    <script src="./diagrams/religion.js"></script>
   </body>
 </html>

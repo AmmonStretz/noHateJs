@@ -6,7 +6,7 @@ generateDiagram(
       f: el => el.text.toLowerCase().includes(word)
     });
     
-    let view = generateDataView(false, onlyTrueAndFalse);
+    let view = generateDataView(true, onlyTrueAndFalse);
     [
     {
         name: 'all',
@@ -30,6 +30,10 @@ generateDiagram(
         name: 's[a-zA-Z]$',
         f: el =>
           new RegExp(/\s[a-zA-Z]$/g).test(el.text)
+      },{
+        name: '[A-Z][A-Z]+',
+        f: el =>
+          new RegExp(/[A-Z][A-Z]+/g).test(el.text)
       }
     ].forEach(filter => {
       addToView(filter, data, view);

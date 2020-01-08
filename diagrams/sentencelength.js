@@ -2,8 +2,8 @@ generateDiagram(
   'Durchschnittliche Satzlänge (in Worten)',
   (() => {
     let min = 0;
-    let max = 15;
-    let stepsize = 1;
+    let max = 20;
+    let stepsize = 16;
     
     let view = generateDataView(false, onlyTrueAndFalse);
     sentenceLength = (text, from, to) => {
@@ -16,7 +16,7 @@ generateDiagram(
       // );
       
       
-      return Math.round(now/nos) >= from && Math.round(now/nos) < to;
+      return Math.round(now/1) >= from && Math.round(now/1) < to;
       
     }
 
